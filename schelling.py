@@ -6,7 +6,19 @@ class SchellingAgent(mesa.Agent):
 
         self.agent_type = agent_type
     def step(self):
-        pass
+        neighbors = self.model.grid.get_neighbors(self.pos,moore = True, include_center = False, radius = 1)
+        similar_neighbors = 0
+        for neighbor in neighbors:
+            if neighbor.agent_type == self.agent_type:
+                similar_neighbors += 1
+        
+        total_neighbors = len(neighbors)
+        if total_neighbors != 0:
+            if (similar_neighbors/total_neighbors) < model.homophily:
+                self.model.grid.move_to_empty(self)
+            else:
+                pass
+    
 
 class SchellingModel(mesa.Model):
     def __init__(self,width,height,density,minority,homophily):
