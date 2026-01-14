@@ -1,4 +1,5 @@
 import mesa 
+import numpy as np
 
 class SchellingAgent(mesa.Agent):
     def __init__(self,model,agent_type,unique_id):
@@ -27,6 +28,7 @@ class SchellingModel(mesa.Model):
         self.width = width
         self.height = height
         self.density = density
+        self.minority = minority
         self.homophily = homophily
         self.grid = mesa.space.SingleGrid(width,height,torus = True)
         self.schedule = mesa.time.RandomActivation(self)
@@ -38,13 +40,22 @@ class SchellingModel(mesa.Model):
                     else:
                         agent_type = 0
                         
-                    agent = SchellingAgent()
+                    agent = SchellingAgent(self,agent_type,unique_id=(x,y))
                     self.grid.place_agent(agent,(x,y))
                     self.schedule.add(agent)
-                        
-                        
+                    
     def step(self):
         self.schedule.step()
+
+    def get_grid_status(self):
+        grid = np.zeros((self.width,self.height))
+        for x in range (self.width):
+            for y in range (self.height):
+                agent = self.grid[x][y]
+                if agent is not None:
+                    grid[x][y] = 1 if agent.agent_type == 1 else 2
+        return grid
+
 
     
 
