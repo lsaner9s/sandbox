@@ -3,8 +3,8 @@ import numpy as np
 
 class SchellingAgent(mesa.Agent):
     def __init__(self,model,agent_type,unique_id):
-        super().__init__(unique_id,model)
-
+        super().__init__(model)
+        self.unique_id = unique_id
         self.agent_type = agent_type
     def step(self):
         neighbors = self.model.grid.get_neighbors(self.pos,moore = True, include_center = False, radius = 1)
@@ -15,7 +15,7 @@ class SchellingAgent(mesa.Agent):
         
         total_neighbors = len(neighbors)
         if total_neighbors != 0:
-            if (similar_neighbors/total_neighbors) < model.homophily:
+            if (similar_neighbors/total_neighbors) < self.model.homophily:
                 self.model.grid.move_to_empty(self)
             else:
                 pass
@@ -31,7 +31,6 @@ class SchellingModel(mesa.Model):
         self.minority = minority
         self.homophily = homophily
         self.grid = mesa.space.SingleGrid(width,height,torus = True)
-        self.schedule = mesa.time.RandomActivation(self)
         for x in range (width):
             for y in range (height):
                 if self.random.random() < self.density:
@@ -42,10 +41,10 @@ class SchellingModel(mesa.Model):
                         
                     agent = SchellingAgent(self,agent_type,unique_id=(x,y))
                     self.grid.place_agent(agent,(x,y))
-                    self.schedule.add(agent)
+                    
                     
     def step(self):
-        self.schedule.step()
+        self.agents.shuffle_do("step")
 
     def get_grid_status(self):
         grid = np.zeros((self.width,self.height))
@@ -60,9 +59,9 @@ class SchellingModel(mesa.Model):
     
 
 
-
-model = SchellingModel(width=10, height=10, density=0.8, minority=0.2, homophily=0.4)
-print("Model created successfully.")
+if __name__ == "__main__":
+        model = SchellingModel(width=10, height=10, density=0.8, minority=0.2, homophily=0.4)
+        print("Model created successfully.")
 
 
 
