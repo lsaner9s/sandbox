@@ -11,7 +11,7 @@ The Schelling Model was implemented in Python using mesa 3.0 on a 50x50 toroidal
 Here in figures 1 and 2 we can see how even at a small scale and high tolerance level (low homophily), segregation appears.
 Below in figure 1 the blue population and red population are mixed together. *Gated communities* (blocks or islands of one group) are not present and the mix is heterogenous 
 
-![Figure 1: Before Running Model](assets/Initial_stage.png)
+![Figure 1: Before Running Model](assets/Initial_state.png)
 
 Below is figure 2 presenting *Society* (the grid) after running the model for 50 steps. Here we can see how a *Gated community* has been formed along the left-hand side. Blue minority communities have also formed as is clearly observed on the bottom left-hand side.
 
