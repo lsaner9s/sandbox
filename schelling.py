@@ -44,7 +44,7 @@ class SchellingModel(mesa.Model):
         self.density = density
         self.minority = minority
         self.homophily = homophily
-        self.datacollector = mesa.DataCollector(model_reporters={"Happines ratio: ": happines_ratio},agent_reporters={})
+        self.datacollector = mesa.DataCollector(model_reporters={"Happiness Ratio: ": happines_ratio},agent_reporters={})
         self.grid = mesa.space.SingleGrid(width,height,torus = True)
         for x in range (width):
             for y in range (height):
