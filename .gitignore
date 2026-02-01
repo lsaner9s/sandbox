@@ -13,3 +13,5 @@ env/
 *.csv
 *.json
 secret_key.txt
+*.ipynb_checkpoints
+.DS_store
