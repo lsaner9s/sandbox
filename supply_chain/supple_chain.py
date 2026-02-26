@@ -77,5 +77,16 @@ class TechFirm(Firm):
             chip_cost = (procurment_cost / amount)*0.30 + (procurment_cost / amount)
             self.inventory['chips']['price'] = chip_cost if chip_cost > self.inventory['chips']['price'] else self.inventory['chips']['price']
 
-
+class Miner(Firm):
+    def mine(self, amount,item):
+        cost_to_mine = amount * 4
+        if self.cash >= cost_to_mine:
+            self.cash -= cost_to_mine
+            if item in self.inventory:
+                self.inventory[item]['quantity'] += amount
+            else:
+                price = (cost_to_mine/amount) * 0.10 + (cost_to_mine/amount)
+                self.inventory[item]= {'quantity': amount, 'price' : price }
+        else:
+            print(f"Insufficient funds to mine")
         
