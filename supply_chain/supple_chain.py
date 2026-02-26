@@ -1,8 +1,9 @@
 class Firm(object):
-    def __init__(self, name, cash, inventory):
+    def __init__(self, name, cash, inventory, market_hub):
         self.name = name
         self.cash = cash
         self.inventory = inventory
+        market_hub.register_participant(self)
      
     def transact(self,other,item,amount):
         price = other.inventory[item]['price']
@@ -22,6 +23,11 @@ class Firm(object):
                 self.inventory[item]= {'quantity': amount, 'price' : price }
             print(f"{self.name} paid ${total_price:.2f} for {amount} {item}")
 
+class Market(object):
+    def __init__(self):
+        self.participants = []
+    def register_participant(self, participant):
+        if participant not in self.participants:
+            self.participants.append(participant)
 
 
-        
