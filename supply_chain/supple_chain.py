@@ -1,9 +1,12 @@
+import random
+
 class Firm(object):
-    def __init__(self, name, cash, inventory, market_hub, industry):
+    def __init__(self, name, cash, inventory, market_hub, industry, margins):
         self.name = name
         self.cash = cash
         self.inventory = inventory
         self.industry = industry
+        self.margins = random.uniform(0.02,0.50)
         market_hub.register_participant(self)
      
     def transact(self,other,item,amount):
@@ -32,11 +35,11 @@ class Market(object):
             self.participants.append(participant)
 
 class TechFirm(Firm):
-    def input_procurement(self,amount):
+    def _input_procurement(self,amount):
         sellers = []
         for firm in self.market_hub.participants:
             if firm.type == 'mining':
-                if firm.inventory['silicon']['quantity'] > 0:
+                if 'silicon' in firm.inventory and firm != self:
                     sellers.append(firm)
         sellers.sort(key=lambda firm: firm.inventory['silicon']['price'])
 
@@ -44,23 +47,12 @@ class TechFirm(Firm):
             if amount <= 0:
                 print(f"Order for {amount} silicon fulfilled")
                 break
-            miner_inventory = miner.inventory['silicon']['quantity']
-            price = miner.inventory['silicon']['price']
+            miner.place_order('silicon',amount,self)
+            amount -= self.inventory['silicon']['quantity']
 
-            order = min(amount, miner_inventory)
-            cost = order * price
+            
 
-            if self.cash >= cost:
-                self.transact(miner,'silicon',order)
-                amount -= order
-                print(f"Bought {amount} of silicon from {miner.name} at ${price} per unit")
-            else:
-                print(f"Ran out of cash while procuring materials")
-                break
-        if amount > 0:
-            print(f"Due to a market shortage we were unable to procure necessary inputs")
-
-    def produce(self,amount):
+    def _produce(self,amount):
         silicon_stock = self.inventory['silicon']['quantity']
         silicon_needed = amount * 5
 
@@ -74,19 +66,32 @@ class TechFirm(Firm):
         else:
             self.inventory['silicon']['quantity'] -= silicon_needed
             self.inventory['chips']['quantity'] += amount
-            chip_cost = (procurment_cost / amount)*0.30 + (procurment_cost / amount)
+            chip_cost = (procurment_cost / amount)* self.margins + (procurment_cost / amount)
             self.inventory['chips']['price'] = chip_cost if chip_cost > self.inventory['chips']['price'] else self.inventory['chips']['price']
 
 class Miner(Firm):
-    def mine(self, amount,item):
+    def _mine(self, amount,item):
         cost_to_mine = amount * 4
         if self.cash >= cost_to_mine:
             self.cash -= cost_to_mine
             if item in self.inventory:
                 self.inventory[item]['quantity'] += amount
             else:
-                price = (cost_to_mine/amount) * 0.10 + (cost_to_mine/amount)
+                price = (cost_to_mine/amount) * self.margins + (cost_to_mine/amount)
                 self.inventory[item]= {'quantity': amount, 'price' : price }
         else:
             print(f"Insufficient funds to mine")
+
+    def place_order(self, item, amount, buyer):
+        current_stock = self.inventory[item]['quantity']
+        if current_stock < amount:
+            order = amount - current_stock
+            self._mine(order, item)
+            final_amount = self.inventory[item]['quantity'] 
+        buyer.transact(self,item,final_amount)
+
+        
+        
+        
+            
         
