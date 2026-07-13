@@ -9,7 +9,7 @@ class Firm(object):
         self.margins = random.uniform(0.02,0.50)
         market_hub.register_participant(self)
         self.debt = 0
-        self.debt_limit = self.asset_value()
+        self.debt_limit = self._asset_value()
      
     def transact(self,other,item,amount):
         price = other.inventory[item]['price']
@@ -38,7 +38,7 @@ class Firm(object):
         return total_asset_value
 
     def _issue_bonds(self,face_value):
-        total_asset_value = self.cash + self.asset_value() 
+        total_asset_value = self.cash + self._asset_value() 
         debt_ratio = self.debt/total_asset_value
 
         interest_rate = 0.02 + (debt_ratio * 0.18)
@@ -85,7 +85,7 @@ class TechFirm(Firm):
         if silicon_stock < silicon_needed:
             order = silicon_needed - silicon_stock
             initial_cash = self.cash
-            self.input_procurement(order)
+            self._input_procurement(order)
             procurment_cost = initial_cash - self.cash
         if self.inventory['silicon']['quantity'] < silicon_needed:
             print(f"Failed to secure necessary inputs to fulfill orders")
@@ -100,7 +100,7 @@ class Miner(Firm):
         cost_to_mine = amount * 4
         if self.cash >= cost_to_mine or (self.debt + cost_to_mine - self.cash) <= self.debt_limit:
             if self.cash < cost_to_mine:
-                self.issue_bonds(cost_to_mine - self.cash)
+                self._issue_bonds(cost_to_mine - self.cash)
             self.cash -= cost_to_mine
             if item in self.inventory:
                 self.inventory[item]['quantity'] += amount
