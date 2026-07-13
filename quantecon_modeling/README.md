@@ -1,0 +1,1 @@
+This directory contains unoptimized scripts and exercises from resources such as QuantEcon lectures and MIT OCW courses. 
